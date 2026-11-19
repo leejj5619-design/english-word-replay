@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 아침 영어 총복습 도우미</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: #fff8f0; /* 복습 버전은 따뜻한 오렌지 톤 배경 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 650px;
+            box-sizing: border-box;
+        }
+        h2 { color: #ff6b00; margin-top: 0; }
+        
+        /* 로그인 화면 */
+        .input-group {
+            margin: 15px 0;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .btn {
+            background-color: #ff6b00;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .btn:hover { background-color: #e05e00; }
+
+        /* 메인 메뉴 (10개 일차 선택) */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 10개이므로 2열 5행으로 큼직하게 배치 */
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .day-btn {
+            background-color: #fff0e6;
+            border: 2px solid #ffd1b3;
+            border-radius: 12px;
+            padding: 18px 10px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: #333;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .day-btn:hover { background-color: #ffd1b3; }
+        .day-btn.completed {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background-color: #28a745;
+            color: white;
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        /* 학습 화면 */
+        .step-indicator { font-size: 1.1rem; color: #ff6b00; font-weight: bold; margin-bottom: 15px; }
+        .word { font-size: 3.5rem; font-weight: bold; color: #1e90ff; margin-bottom: 10px; }
+        .meaning { font-size: 2rem; color: #333; margin-bottom: 20px; }
+        .sentence-box {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: left;
+        }
+        .sentence { font-size: 1.3rem; color: #444; margin-bottom: 5px; font-weight: bold; }
+        .translation { font-size: 1.1rem; color: #666; }
+
+        /* 발음 버튼 영역 */
+        .audio-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .audio-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid #ff6b00;
+            background-color: white;
+            color: #ff6b00;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .audio-btn.played {
+            background-color: #ff6b00;
+            color: white;
+        }
+        .audio-btn:disabled {
+            border-color: #ccc;
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        .hint { font-size: 0.95rem; color: #cc0000; font-weight: bold; margin-top: 15px; }
+
+        /* 공책 쓰기용 스타일 (10개 항목에 맞춰 간격 최적화) */
+        .write-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2c3e50;
+            background-color: #ffe6e6;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            word-break: keep-all;
+            line-height: 1.5;
+            border-left: 5px solid #ff4d4d;
+        }
+        .write-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        .write-table td {
+            border: 1px solid #ddd;
+            padding: 10px 12px;
+            text-align: left;
+        }
+        .write-table td.num-col {
+            font-weight: bold;
+            color: #777;
+            text-align: center;
+            width: 8%;
+        }
+        .write-table td.word-col {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e90ff;
+            width: 47%;
+        }
+        .write-table td.mean-col {
+            font-size: 1.15rem;
+            color: #333;
+            width: 45%;
+        }
+        .write-list-item {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            line-height: 1.5;
+        }
+        .write-list-num {
+            font-weight: bold;
+            color: #ff6b00;
+            font-size: 1.1rem;
+            margin-right: 5px;
+        }
+        .write-list-eng {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #2c3e50;
+            display: block;
+        }
+        .write-list-kor {
+            font-size: 1rem;
+            color: #666;
+            display: block;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 1단계: 로그인 화면 -->
+<div class="card" id="login-view">
+    <h2>🔥 아침 영어 10일 총복습 로그인</h2>
+    <p style="color: #666; font-size: 0.95rem;">기존과 같은 이름과 비밀번호를 입력하세요.</p>
+    <div class="input-group">
+        <label for="username">이름</label>
+        <input type="text" id="username" placeholder="이름을 입력하세요">
+    </div>
+    <div class="input-group">
+        <label for="password">비밀번호 (4자리)</label>
+        <input type="password" id="password" pattern="[0-9]*" inputmode="numeric" maxlength="4" placeholder="숫자 4자리">
+    </div>
+    <button class="btn" onclick="login()">복습 시작하기</button>
+</div>
+
+<!-- 2단계: 10개 복습 선택창 (메인 메뉴) -->
+<div class="card" id="menu-view" style="display: none;">
+    <h2 id="welcome-msg">환영합니다!</h2>
+    <p style="color: #666; margin-bottom: 20px;">하루에 10개씩! 복습할 일차(Day)를 선택하세요.</p>
+    <div class="grid-container" id="day-grid">
+        <!-- 1~10일차 버튼이 동적으로 생성됩니다 -->
+    </div>
+    <button class="btn" style="background-color: #888; margin-top: 25px;" onclick="logout()">로그아웃</button>
+</div>
+
+<!-- 3단계: 단어/문장 학습 화면 -->
+<div class="card" id="study-view" style="display: none;">
+    <div class="step-indicator" id="step-title">1단계: 단어 복습 (1/10)</div>
+    <div class="word" id="display-word">Word</div>
+    <div class="meaning" id="display-meaning">뜻</div>
+    
+    <!-- 문장 영역 (2단계 학습 때만 보임) -->
+    <div class="sentence-box" id="sentence-box" style="display: none;">
+        <div class="sentence" id="display-sentence">English Sentence</div>
+        <div class="translation" id="display-translation">한국어 뜻</div>
+    </div>
+
+    <!-- 발음 듣기 1, 2, 3번 버튼 -->
+    <p class="hint">📢 발음 버튼을 듣고 따라서 읽어보세요. 총 3번 반복해요.</p>
+    <div class="audio-group">
+        <button class="audio-btn" id="audio1" onclick="playTTS(1)">1</button>
+        <button class="audio-btn" id="audio2" onclick="playTTS(2)" disabled>2</button>
+        <button class="audio-btn" id="audio3" onclick="playTTS(3)" disabled>3</button>
+    </div>
+
+    <button class="btn" id="next-btn" onclick="nextStep()" disabled>발음을 모두 듣고 넘어가기</button>
+    <button class="btn" style="background-color: #ff6b6b; margin-top: 10px;" onclick="exitStudy()">학습 중단하고 메뉴로</button>
+</div>
+
+<!-- 4단계: 영어공책 쓰기 (단어 10개 전체 보기) -->
+<div class="card" id="write-words-view" style="display: none;">
+    <div class="write-title">✏️ 영어공책에 1번 단어부터 순서대로 읽고 써봐요. 총 3번 반복해서 써요.</div>
+    <table class="write-table">
+        <tbody id="write-words-tbody">
+            <!-- 단어 10개 리스트가 렌더링됩니다 -->
+        </tbody>
+    </table>
+    <button class="btn" onclick="finishWordsWriting()">완료하고 다음 단계로 👉</button>
+</div>
+
+<!-- 5단계: 영어공책 쓰기 (문장 10개 전체 보기) -->
+<div class="card" id="write-sentences-view" style="display: none;">
+    <div class="write-title" style="background-color: #e6f7ff; border-left-color: #1e90ff;">✏️ 1번 문장부터 순서대로 써봐요. 1번씩만 써요.</div>
+    <div id="write-sentences-list" style="margin-bottom: 25px;">
+        <!-- 문장 10개 리스트가 렌더링됩니다 -->
+    </div>
+    <button class="btn" style="background-color: #28a745;" onclick="finishAllStudy()">공책 쓰기 완료! 복습 마치기 🌟</button>
+</div>
+
+<script>
+    // 총 100개 단어장 목록 (하루 10개씩 총 10일 분량)
+    const allWords = [
+        // Day 1 (1~10)
+        { word: "About", meaning: "~에 대하여", sentence: "Tell me about your school.", translation: "너의 학교에 대해 말해줘." },
+        { word: "Believe", meaning: "믿다", sentence: "I believe in you.", translation: "나는 너를 믿어." },
+        { word: "Clean", meaning: "깨끗한, 청소하다", sentence: "Clean your room please.", translation: "방을 청소하렴." },
+        { word: "Dream", meaning: "꿈", sentence: "My dream is to be a teacher.", translation: "내 꿈은 선생님이 되는 거야." },
+        { word: "Experience", meaning: "경험", sentence: "It was a great experience.", translation: "그것은 좋은 경험이었어." },
+        { word: "Famous", meaning: "유명한", sentence: "He is a famous singer.", translation: "그는 유명한 가수야." },
+        { word: "Great", meaning: "위대한, 좋은", sentence: "Have a great day!", translation: "좋은 하루 보내!" },
+        { word: "Healthy", meaning: "건강한", sentence: "Eat healthy food every day.", translation: "매일 건강한 음식을 먹으렴." },
+        { word: "Information", meaning: "정보", sentence: "I need some information.", translation: "나는 정보가 좀 필요해." },
+        { word: "Join", meaning: "가입하다, 함께하다", sentence: "Would you join us?", translation: "우리와 함께할래?" },
+        
+        // Day 2 (11~20)
+        { word: "Kind", meaning: "친절한, 종류", sentence: "She is very kind to everyone.", translation: "그녀는 모두에게 무척 친절해." },
+        { word: "Learn", meaning: "배우다", sentence: "I want to learn English.", translation: "나는 영어를 배우고 싶어." },
+        { word: "Memory", meaning: "기억, 추억", sentence: "This is a good memory.", translation: "이것은 좋은 추억이야." },
+        { word: "Nice", meaning: "좋은, 친절한", sentence: "Nice to meet you.", translation: "만나서 반가워." },
+        { word: "Opinion", meaning: "의견", sentence: "What is your opinion?", translation: "네 의견은 어떠니?" },
+        { word: "Practice", meaning: "연습하다", sentence: "Practice makes perfect.", translation: "연습이 완벽을 만든다." },
+        { word: "Question", meaning: "질문", sentence: "I have a question.", translation: "질문이 있어요." },
+        { word: "Remember", meaning: "기억하다", sentence: "Remember my name.", translation: "내 이름을 기억해줘." },
+        { word: "Special", meaning: "특별한", sentence: "Today is a special day.", translation: "오늘은 특별한 날이야." },
+        { word: "Together", meaning: "함께", sentence: "Let's study English together.", translation: "함께 영어 공부하자." },
+        
+        // Day 3 (21~30)
+        { word: "Understand", meaning: "이해하다", sentence: "Do you understand me?", translation: "내 말이 이해가 가니?" },
+        { word: "Visit", meaning: "방문하다", sentence: "I want to visit Seoul.", translation: "나는 서울을 방문하고 싶어." },
+        { word: "Weather", meaning: "날씨", sentence: "How is the weather today?", translation: "오늘 날씨 어때?" },
+        { word: "Young", meaning: "젊은, 어린", sentence: "He is still young.", translation: "그는 아직 젊다." },
+        { word: "Zoo", meaning: "동물원", sentence: "Let's go to the zoo.", translation: "동물원에 가자." },
+        { word: "Adventure", meaning: "모험", sentence: "We love adventure.", translation: "우리는 모험을 사랑해." },
+        { word: "Beautiful", meaning: "아름다운", sentence: "What a beautiful flower!", translation: "정말 아름다운 꽃이구나!" },
+        { word: "Correct", meaning: "맞는, 고치다", sentence: "That is the correct answer.", translation: "그것이 정답이야." },
+        { word: "Different", meaning: "다른", sentence: "We are different.", translation: "우리는 달라." },
+        { word: "Enough", meaning: "충분한", sentence: "That is enough.", translation: "그것으로 충분해." },
+        
+        // Day 4 (31~40)
+        { word: "Favorite", meaning: "가장 좋아하는", sentence: "What is your favorite color?", translation: "네가 가장 좋아하는 색은 무엇이니?" },
+        { word: "Grade", meaning: "학년, 성적", sentence: "I am in the sixth grade.", translation: "나는 6학년이야." },
+        { word: "History", meaning: "역사", sentence: "We study Korean history.", translation: "우리는 한국 역사를 배워." },
+        { word: "Imagine", meaning: "상상하다", sentence: "Imagine you are flying.", translation: "네가 날고 있다고 상상해봐." },
+        { word: "Keep", meaning: "유지하다, 보관하다", sentence: "Keep your promise.", translation: "약속을 지키렴." },
+        { word: "Lucky", meaning: "운이 좋은", sentence: "Today is my lucky day.", translation: "오늘은 나의 운 좋은 날이야." },
+        { word: "Mistake", meaning: "실수", sentence: "It's okay to make a mistake.", translation: "실수해도 괜찮아." },
+        { word: "Nature", meaning: "자연", sentence: "We should protect nature.", translation: "우리는 자연을 보호해야 해." },
+        { word: "Over", meaning: "~너머에, 끝난", sentence: "The game is over.", translation: "게임이 끝났어." },
+        { word: "Problem", meaning: "문제", sentence: "No problem!", translation: "문제없어! (천만에)" },
+        
+        // Day 5 (41~50)
+        { word: "Quiet", meaning: "조용한", sentence: "Be quiet in the library.", translation: "도서관에서는 조용히 하렴." },
+        { word: "Reason", meaning: "이유", sentence: "Give me one good reason.", translation: "타당한 이유를 하나만 대봐." },
+        { word: "Strong", meaning: "강한", sentence: "He is very strong.", translation: "그는 아주 힘이 세." },
+        { word: "Travel", meaning: "여행하다", sentence: "I want to travel the world.", translation: "나는 세계를 여행하고 싶어." },
+        { word: "Useful", meaning: "유용한", sentence: "This app is very useful.", translation: "이 앱은 아주 유용해." },
+        { word: "Village", meaning: "마을", sentence: "He lives in a small village.", translation: "그는 작은 마을에 살아." },
+        { word: "Wonderful", meaning: "멋진", sentence: "Have a wonderful time!", translation: "멋진 시간 보내!" },
+        { word: "Yesterday", meaning: "어제", sentence: "I met him yesterday.", translation: "나는 어제 그를 만났어." },
+        { word: "Action", meaning: "행동", sentence: "Actions speak louder than words.", translation: "말보다 행동이 중요하다." },
+        { word: "Better", meaning: "더 좋은", sentence: "I feel much better now.", translation: "이제 몸 상태가 훨씬 좋아졌어." },
+        
+        // Day 6 (51~60)
+        { word: "Baby", meaning: "아기", sentence: "The baby is sleeping.", translation: "아기가 자고 있어." },
+        { word: "Cage", meaning: "우리, 새장", sentence: "The bird is in the cage.", translation: "새가 새장 안에 있다." },
+        { word: "Dad", meaning: "아빠", sentence: "My dad is a nice man.", translation: "우리 아빠는 좋은 분이야." },
+        { word: "Ear", meaning: "귀", sentence: "We listen with our ears.", translation: "우리는 귀로 들어." },
+        { word: "Back", meaning: "등, 뒤쪽", sentence: "Come back soon.", translation: "곧 돌아와." },
+        { word: "Calendar", meaning: "달력", sentence: "Check the date on the calendar.", translation: "달력에서 날짜를 확인해봐." },
+        { word: "Dance", meaning: "춤추다", sentence: "They like to dance.", translation: "그들은 춤추는 것을 좋아해." },
+        { word: "Early", meaning: "이른, 일찍", sentence: "I wake up early.", translation: "나는 일찍 일어나." },
+        { word: "Earth", meaning: "지구", sentence: "We live on Earth.", translation: "우리는 지구에 살아." },
+        { word: "Future", meaning: "미래", sentence: "Think about your future.", translation: "네 미래에 대해 생각해봐." },
+        
+        // Day 7 (61~70)
+        { word: "Game", meaning: "게임", sentence: "Let's play a game.", translation: "게임하자." },
+        { word: "Dark", meaning: "어두운", sentence: "It is dark outside.", translation: "밖이 어둡다." },
+        { word: "East", meaning: "동쪽", sentence: "The sun rises in the east.", translation: "해는 동쪽에서 뜬다." },
+        { word: "Festival", meaning: "축제", sentence: "We enjoyed the school festival.", translation: "우리는 학교 축제를 즐겼어." },
+        { word: "Gate", meaning: "대문, 문", sentence: "Please close the gate.", translation: "대문을 닫아주세요." },
+        { word: "Habit", meaning: "습관", sentence: "Reading is a good habit.", translation: "독서는 좋은 습관이다." },
+        { word: "Easy", meaning: "쉬운", sentence: "This English test is easy.", translation: "이 영어 시험은 쉬워." },
+        { word: "Flavor", meaning: "맛, 향", sentence: "I like chocolate flavor.", translation: "나는 초콜릿 맛이 좋아." },
+        { word: "Gift", meaning: "선물", sentence: "This is a gift for you.", translation: "이건 널 위한 선물이야." },
+        { word: "Hair", meaning: "머리카락", sentence: "She has long hair.", translation: "그녀는 긴 머리를 가졌어." },
+        
+        // Day 8 (71~80)
+        { word: "Idea", meaning: "생각, 아이디어", sentence: "I have a good idea.", translation: "나한테 좋은 생각이 있어." },
+        { word: "Follow", meaning: "따라가다, 따르다", sentence: "Follow me, please.", translation: "날 따라와." },
+        { word: "Hobby", meaning: "취미", sentence: "My hobby is cooking.", translation: "내 취미는 요리야." },
+        { word: "Important", meaning: "중요한", sentence: "This is an important rule.", translation: "이것은 중요한 규칙이야." },
+        { word: "Job", meaning: "직업, 일", sentence: "What is your father's job?", translation: "네 아버지의 직업은 무엇이니?" },
+        { word: "Grow", meaning: "자라다", sentence: "Plants need water to grow.", translation: "식물은 자라기 위해 물이 필요해." },
+        { word: "Honest", meaning: "정직한", sentence: "Be honest with yourself.", translation: "스스로에게 정직해라." },
+        { word: "Island", meaning: "섬", sentence: "Jeju is a beautiful island.", translation: "제주는 아름다운 섬이야." },
+        { word: "Journey", meaning: "여정, 여행", sentence: "Life is a long journey.", translation: "인생은 긴 여정이다." },
+        { word: "Keep", meaning: "유지하다", sentence: "Keep going!", translation: "계속 가라! (계속해!)" },
+        
+        // Day 9 (81~90)
+        { word: "Hope", meaning: "희망, 바라다", sentence: "I hope you like it.", translation: "네가 그걸 마음에 들어 하면 좋겠어." },
+        { word: "Interesting", meaning: "흥미로운", sentence: "This book is very interesting.", translation: "이 책은 매우 흥미로워." },
+        { word: "Joy", meaning: "기쁨", sentence: "Children bring joy.", translation: "아이들은 기쁨을 가져다준다." },
+        { word: "Kid", meaning: "아이, 어린이", sentence: "She is a smart kid.", translation: "그녀는 똑똑한 아이야." },
+        { word: "Language", meaning: "언어", sentence: "English is a global language.", translation: "영어는 세계적인 언어이다." },
+        { word: "Illness", meaning: "병, 아픔", sentence: "He recovered from illness.", translation: "그는 병에서 회복되었다." },
+        { word: "Judge", meaning: "판사, 판단하다", sentence: "Don't judge a book by its cover.", translation: "겉표지로 책을 판단하지 마라." },
+        { word: "Kitchen", meaning: "부엌", sentence: "Mom is in the kitchen.", translation: "엄마는 부엌에 계셔." },
+        { word: "Leader", meaning: "지도자, 리더", sentence: "He is a good class leader.", translation: "그는 좋은 학급 회장이다." },
+        { word: "Magazine", meaning: "잡지", sentence: "I like reading sports magazines.", translation: "나는 스포츠 잡지 읽는 것을 좋아해." },
+        
+        // Day 10 (91~100)
+        { word: "Juice", meaning: "주스", sentence: "I want orange juice.", translation: "오렌지 주스 원해요." },
+        { word: "Key", meaning: "열쇠, 비결", sentence: "Where is my car key?", translation: "내 차 열쇠가 어디 있지?" },
+        { word: "Library", meaning: "도서관", sentence: "Let's meet at the library.", translation: "도서관에서 만나자." },
+        { word: "Major", meaning: "주요한, 전공", sentence: "Safety is our major concern.", translation: "안전이 우리의 주요 관심사이다." },
+        { word: "Neighbor", meaning: "이웃", sentence: "Say hello to your neighbor.", translation: "이웃에게 인사해라." },
+        { word: "Call", meaning: "부르다, 전화하다", sentence: "Call me later.", translation: "나중에 전화해." },
+        { word: "Danger", meaning: "위험", sentence: "The sign warns of danger.", translation: "그 표지판은 위험을 경고한다." },
+        { word: "Earth", meaning: "지구", sentence: "The Earth is round.", translation: "지구는 둥글다." },
+        { word: "Habit", meaning: "습관", sentence: "Break bad habits.", translation: "나쁜 습관을 버려라." },
+        { word: "Happy", meaning: "행복한", sentence: "We are so happy today.", translation: "우리는 오늘 정말 행복해." }
+    ];
+
+    const WORDS_PER_DAY = 10; // 하루 10개 설정
+    const TOTAL_DAYS = 10;    // 총 10일 설정
+
+    let currentUser = null;
+    let userProgress = {}; 
+    let currentDay = 1;
+    let currentStage = 1; // 1: 단어, 2: 문장
+    let currentIndex = 0; // 0 ~ 9 (10개 단어)
+    let audioPlayed = [false, false, false];
+
+    // 로그인 기능 (기존 20일 데이터와 구분하기 위해 _review 접미사 사용)
+    function login() {
+        const name = document.getElementById("username").value.trim();
+        const pin = document.getElementById("password").value.trim();
+
+        if (!name || pin.length !== 4 || isNaN(pin)) {
+            alert("올바른 이름과 4자리 숫자 비밀번호를 입력해주세요.");
+            return;
+        }
+
+        currentUser = `${name}_${pin}_review`;
+        document.getElementById("welcome-msg").innerText = `🔥 ${name} 학생, 총복습 화이팅!`;
+        
+        const savedData = localStorage.getItem(currentUser);
+        userProgress = savedData ? JSON.parse(savedData) : {};
+
+        buildMenu();
+        showView("menu-view");
+    }
+
+    // 로그아웃
+    function logout() {
+        currentUser = null;
+        userProgress = {};
+        document.getElementById("username").value = "";
+        document.getElementById("password").value = "";
+        showView("login-view");
+    }
+
+    // 화면 전환 함수
+    function showView(viewId) {
+        document.getElementById("login-view").style.display = "none";
+        document.getElementById("menu-view").style.display = "none";
+        document.getElementById("study-view").style.display = "none";
+        document.getElementById("write-words-view").style.display = "none";
+        document.getElementById("write-sentences-view").style.display = "none";
+        document.getElementById(viewId).style.display = "block";
+    }
+
+    // 10개 일차 복습 선택창 생성
+    function buildMenu() {
+        const grid = document.getElementById("day-grid");
+        grid.innerHTML = "";
+
+        for (let i = 1; i <= TOTAL_DAYS; i++) {
+            const btn = document.createElement("button");
+            btn.className = "day-btn";
+            btn.innerText = `복습 Day ${i} (10개)`;
+            
+            if (userProgress[`Day${i}`]) {
+                btn.classList.add("completed");
+                const badge = document.createElement("span");
+                badge.className = "badge";
+                badge.innerText = "완료";
+                btn.appendChild(badge);
+            }
+
+            btn.onclick = () => startStudy(i);
+            grid.appendChild(btn);
+        }
+    }
+
+    // 공부 시작
+    function startStudy(day) {
+        currentDay = day;
+        currentStage = 1;
+        currentIndex = 0;
+        resetAudioStatus();
+        
+        showView("study-view");
+        updateStudyUI();
+    }
+
+    // 오디오 상태 리셋
+    function resetAudioStatus() {
+        audioPlayed = [false, false, false];
+        document.getElementById("audio1").className = "audio-btn";
+        document.getElementById("audio2").className = "audio-btn";
+        document.getElementById("audio3").className = "audio-btn";
+        
+        document.getElementById("audio1").disabled = false;
+        document.getElementById("audio2").disabled = true;
+        document.getElementById("audio3").disabled = true;
+        
+        document.getElementById("next-btn").disabled = true;
+        document.getElementById("next-btn").innerText = "발음을 모두 듣고 넘어가기";
+    }
+
+    // TTS 발음 소리 송출
+    function playTTS(btnNum) {
+        const dayStartIndex = (currentDay - 1) * WORDS_PER_DAY;
+        const currentData = allWords[dayStartIndex + currentIndex];
+        
+        const textToSpeak = (currentStage === 1) ? currentData.word : currentData.sentence;
+
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85;
+        window.speechSynthesis.speak(utterance);
+
+        audioPlayed[btnNum - 1] = true;
+        const currentBtn = document.getElementById(`audio${btnNum}`);
+        currentBtn.classList.add("played");
+
+        if (btnNum === 1) {
+            document.getElementById("audio2").disabled = false;
+        } else if (btnNum === 2) {
+            document.getElementById("audio3").disabled = false;
+        } else if (btnNum === 3) {
+            document.getElementById("next-btn").disabled = false;
+            document.getElementById("next-btn").innerText = "다음 단계로 넘어가기 👉";
+        }
+    }
+
+    // 학습 화면 업데이트
+    function updateStudyUI() {
+        const dayStartIndex = (currentDay - 1) * WORDS_PER_DAY;
+        const currentData = allWords[dayStartIndex + currentIndex];
+
+        if (currentStage === 1) {
+            document.getElementById("step-title").innerText = `복습 Day ${currentDay} [1단계: 단어 복습] ${currentIndex + 1} / ${WORDS_PER_DAY}`;
+            document.getElementById("display-word").innerText = currentData.word;
+            document.getElementById("display-meaning").innerText = currentData.meaning;
+            document.getElementById("sentence-box").style.display = "none";
+        } else {
+            document.getElementById("step-title").innerText = `복습 Day ${currentDay} [2단계: 문장 복습] ${currentIndex + 1} / ${WORDS_PER_DAY}`;
+            document.getElementById("display-word").innerText = currentData.word;
+            document.getElementById("display-meaning").innerText = currentData.meaning;
+            document.getElementById("display-sentence").innerText = currentData.sentence;
+            document.getElementById("display-translation").innerText = currentData.translation;
+            document.getElementById("sentence-box").style.display = "block";
+        }
+        resetAudioStatus();
+    }
+
+    // 다음으로 넘어가기 버튼 클릭
+    function nextStep() {
+        currentIndex++;
+
+        if (currentIndex >= WORDS_PER_DAY) {
+            currentIndex = 0;
+            if (currentStage === 1) {
+                currentStage = 2;
+                alert("🎉 1단계 단어 10개 복습 완료! 이제 문장 10개를 귀로 들으며 읽어봅시다.");
+            } else {
+                setupWordsWritingView();
+                return;
+            }
+        }
+        updateStudyUI();
+    }
+
+    // 3단계: 단어 10개 쓰기 화면 구성
+    function setupWordsWritingView() {
+        const dayStartIndex = (currentDay - 1) * WORDS_PER_DAY;
+        const tbody = document.getElementById("write-words-tbody");
+        tbody.innerHTML = "";
+
+        for (let i = 0; i < WORDS_PER_DAY; i++) {
+            const currentData = allWords[dayStartIndex + i];
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td class="num-col">${i + 1}</td>
+                <td class="word-col">${currentData.word}</td>
+                <td class="mean-col">${currentData.meaning}</td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        showView("write-words-view");
+    }
+
+    // 단어 쓰기 완료 -> 문장 10개 쓰기 구성
+    function finishWordsWriting() {
+        const dayStartIndex = (currentDay - 1) * WORDS_PER_DAY;
+        const listDiv = document.getElementById("write-sentences-list");
+        listDiv.innerHTML = "";
+
+        for (let i = 0; i < WORDS_PER_DAY; i++) {
+            const currentData = allWords[dayStartIndex + i];
+            const item = document.createElement("div");
+            item.className = "write-list-item";
+
+            item.innerHTML = `
+                <span class="write-list-eng"><span class="write-list-num">${i + 1}.</span> ${currentData.sentence}</span>
+                <span class="write-list-kor">${currentData.translation}</span>
+            `;
+            listDiv.appendChild(item);
+        }
+
+        showView("write-sentences-view");
+    }
+
+    // 모든 과정 마치고 저장 및 메뉴로 복귀
+    function finishAllStudy() {
+        userProgress[`Day${currentDay}`] = true;
+        localStorage.setItem(currentUser, JSON.stringify(userProgress));
+        
+        alert(`👏 오늘 복습 10개를 완벽히 완료했습니다! 공책을 선생님께 보여드리고 확인을 받으세요!`);
+        buildMenu();
+        showView("menu-view");
+    }
+
+    // 중간 이탈
+    function exitStudy() {
+        if (confirm("정말 학습을 중단하고 메뉴로 돌아가겠습니까? 현재 일차의 기록은 저장되지 않습니다.")) {
+            buildMenu();
+            showView("menu-view");
+        }
+    }
+</script>
+
+</body>
+</html>
